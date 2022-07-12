@@ -1,3 +1,4 @@
+import { connectToDatabase, getDocument } from "../../lib/db.js";
 import MeetupDetail from "../../components/meetups/MeetupDetail.js";
 const MeetupDetails = ({ meetupData }) => {
   const { image, title, address, description } = meetupData;
@@ -18,22 +19,7 @@ export async function getStaticPaths() {
     paths: [
       {
         params: {
-          meetupId: "m1",
-        },
-      },
-      {
-        params: {
-          meetupId: "m2",
-        },
-      },
-      {
-        params: {
-          meetupId: "m3",
-        },
-      },
-      {
-        params: {
-          meetupId: "m4",
+          meetupId: "62cd16f7a445eaceb609f58a",
         },
       },
     ],
@@ -42,16 +28,22 @@ export async function getStaticPaths() {
 
 export async function getStaticProps(context) {
   const meetupId = context.params.meetupId;
+  let client;
+  let meetup;
+  try {
+    client = await connectToDatabase();
+  } catch (error) {
+    return;
+  }
+  try {
+    meetup = await getDocument(client, "meetups", "meetups", meetupId);
+    console.log(meetup);
+  } catch (error) {
+    return;
+  }
   return {
     props: {
-      meetupData: {
-        id: "m1",
-        image:
-          "https://pocket-syndicated-images.s3.amazonaws.com/5ecea0640d986.jpg",
-        title: "A Meetup Title",
-        address: "123 fake st",
-        description: "a meetup description",
-      },
+      meetupData: meetup,
     },
   };
 }
