@@ -1,4 +1,8 @@
-import { connectToDatabase, getDocument } from "../../lib/db.js";
+import {
+  connectToDatabase,
+  getDocument,
+  getAllDocuments,
+} from "../../lib/db.js";
 import MeetupDetail from "../../components/meetups/MeetupDetail.js";
 const MeetupDetails = ({ meetupData }) => {
   const { image, title, address, description } = meetupData;
@@ -14,15 +18,23 @@ const MeetupDetails = ({ meetupData }) => {
 };
 
 export async function getStaticPaths() {
+  let client;
+  let meetups;
+  try {
+    client = await connectToDatabase();
+  } catch (error) {
+    return;
+  }
+
+  try {
+    meetups = await getAllDocuments(client, "meetups", "meetups", { _id: -1 });
+  } catch (error) {
+    return;
+  }
+  const paths = meetups.map((meetup) => ({ params: { meetupId: meetup._id } }));
   return {
     fallback: false,
-    paths: [
-      {
-        params: {
-          meetupId: "62cd16f7a445eaceb609f58a",
-        },
-      },
-    ],
+    paths,
   };
 }
 
@@ -37,7 +49,6 @@ export async function getStaticProps(context) {
   }
   try {
     meetup = await getDocument(client, "meetups", "meetups", meetupId);
-    console.log(meetup);
   } catch (error) {
     return;
   }
