@@ -1,3 +1,4 @@
+import Head from "next/head";
 import {
   connectToDatabase,
   getDocument,
@@ -9,12 +10,18 @@ import MeetupDetail from "../../components/meetups/MeetupDetail.js";
 const MeetupDetails = ({ meetupData }) => {
   const { image, title, address, description } = meetupData;
   return (
-    <MeetupDetail
-      image={image}
-      title={title}
-      address={address}
-      description={description}
-    />
+    <>
+      <Head>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+      </Head>
+      <MeetupDetail
+        image={image}
+        title={title}
+        address={address}
+        description={description}
+      />
+    </>
   );
 };
 
@@ -36,7 +43,7 @@ export async function getStaticPaths() {
     return { params: { meetupId: meetup } };
   });
   return {
-    fallback: false,
+    fallback: true,
     paths,
   };
 }

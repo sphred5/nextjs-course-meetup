@@ -1,9 +1,19 @@
 import MeetupList from "../components/meetups/MeetupList.js";
 import { connectToDatabase, getAllDocuments } from "../lib/db.js";
+import Head from "next/head";
 
 const HomePage = (props) => {
-  return <MeetupList meetups={props.meetups} />;
+  return (
+    <>
+      <Head>
+        <title>React Meetups</title>
+        <meta name="description" content="brows a list of meetups" />
+      </Head>
+      <MeetupList meetups={props.meetups} />
+    </>
+  );
 };
+
 export async function getStaticProps() {
   let client;
   try {
