@@ -1,12 +1,13 @@
 import {
   connectToDatabase,
   getDocument,
-  getAllDocuments,
+  getAllDocumentIds,
 } from "../../lib/db.js";
+
 import MeetupDetail from "../../components/meetups/MeetupDetail.js";
+
 const MeetupDetails = ({ meetupData }) => {
   const { image, title, address, description } = meetupData;
-
   return (
     <MeetupDetail
       image={image}
@@ -27,11 +28,13 @@ export async function getStaticPaths() {
   }
 
   try {
-    meetups = await getAllDocuments(client, "meetups", "meetups", { _id: -1 });
+    meetups = await getAllDocumentIds(client, "meetups", "meetups");
   } catch (error) {
     return;
   }
-  const paths = meetups.map((meetup) => ({ params: { meetupId: meetup._id } }));
+  const paths = meetups.map((meetup) => {
+    return { params: { meetupId: meetup } };
+  });
   return {
     fallback: false,
     paths,
